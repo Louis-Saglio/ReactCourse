@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+// import App from './App';
 import reportWebVitals from './reportWebVitals';
+import TicTacToe from "./TicTacToe";
+// import Sandbox from "./Sandbox";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/*<Sandbox name={"Louis"} />*/}
+    {/*<App/>*/}
+    <TicTacToe/>
   </React.StrictMode>,
   document.getElementById('root')
 );
