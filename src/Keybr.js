@@ -1,108 +1,93 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 
 
 function choice(array) {
   return array[Math.floor(Math.random() * array.length)]
 }
 
-function useTimer(initialTime, tickDelay){
-  const [timeLeft, setTimeLeft] = useState(initialTime)
-
-  useEffect(() => {
-    if(timeLeft <= 0){
-      return () => null
-    }
-    const interval = setInterval(() => {
-      setTimeLeft(prevValue => {
-        if(prevValue - tickDelay <= 0){
-          return 0
-        }
-        return prevValue - tickDelay
-      })
-    },tickDelay)
-
-    return () => {
-      clearInterval(interval)
-    }
-  },[timeLeft, tickDelay])
-
-  useEffect(() => {
-    setTimeLeft(initialTime)
-  },[initialTime])
-
-
-  return timeLeft
-}
+const words = [
+  ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'donec'],
+  ['seven', 'world', 'about', 'again', 'heart', 'pizza', 'water', 'happy', 'sixty', 'board', 'month', 'Angel', 'death', 'green', 'music', 'fifty', 'three', 'party', 'piano', 'Kelly', 'mouth', 'woman', 'sugar', 'amber', 'dream', 'apple', 'laugh'],
+  'perfect, Tuesday, country, pumpkin, special, America, freedom, picture, husband, monster, seventy, Melissa, nothing, jessica, sixteen, morning, journey, history, Georgia, fifteen, amazing, rihanna, January, dolphin, teacher, forever, kitchen, holiday, Madison, welcome, Jupiter, justice, diamond'.split(', '),
+  'California, everything, aboveboard, Washington, basketball, weathering, characters, literature, perfection, volleyball, depression, homecoming, technology, maleficent, watermelon, appreciate, relaxation, convection, government, abominable, salmonella, strawberry, aberration, retirement, television, contraband, Alzheimers, silhouette, friendship, punishment, loneliness, university'.split(', '),
+]
 
 
 export default function Keybr() {
-  const [words, setWords] = useState(
-    [
-      ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'donec'],
-      ['seven', 'world', 'about', 'again', 'heart', 'pizza', 'water', 'happy', 'sixty', 'board', 'month', 'Angel', 'death', 'green', 'music', 'fifty', 'three', 'party', 'piano', 'Kelly', 'mouth', 'woman', 'sugar', 'amber', 'dream', 'apple', 'laugh'],
-      'perfect, Tuesday, country, pumpkin, special, America, freedom, picture, husband, monster, seventy, Melissa, nothing, jessica, sixteen, morning, journey, history, Georgia, fifteen, amazing, rihanna, January, dolphin, teacher, forever, kitchen, holiday, Madison, welcome, Jupiter, justice, diamond'.split(', '),
-      'California, everything, aboveboard, Washington, basketball, weathering, characters, literature, perfection, volleyball, depression, homecoming, technology, maleficent, watermelon, appreciate, relaxation, convection, government, abominable, salmonella, strawberry, aberration, retirement, television, contraband, Alzheimers, silhouette, friendship, punishment, loneliness, university'.split(', '),
-    ]
-  )
-  const [currentLetterIndex, setCurrentLetterIndex] = useState(0)
-  const [currentTypedWord, setCurrentTypedWord] = useState("")
-  const [timer, setTimer] = useState()
-  const [ended, setEnded] = useState(false)
-  const [score, setScore] = useState(0)
+  const [typedWord, setTypedWord] = useState("")
+  const [timer, setTimer] = useState(5)
   const [level, setLevel] = useState(0)
-  const [currentWord, setCurrentWord] = useState(choice(words[level]))
+  const [score, setScore] = useState(0)
+  const [state, setState] = useState("running")
 
-  function onInput(event) {
-    if (timer === undefined) {
-      setTimer(setTimeout(loose, 5000))
-    }
-    if (event.target.value[currentLetterIndex] === currentWord[currentLetterIndex]) {
-      setCurrentLetterIndex((prev) => prev + 1)
-      setCurrentTypedWord(prev => prev + event.target.value[currentLetterIndex])
-    }
-    if (event.target.value === currentWord) {
-      setCurrentTypedWord("")
-      setCurrentLetterIndex(0)
-      setCurrentWord(choice(words[level]))
-      setScore(prev => prev + 1)
-      clearTimeout(timer)
-      setTimer(setTimeout(loose, 5000))
-      if (score > 5) {
-        setLevel(prev => prev + 1)
-        setScore(0)
+  const getWord = useCallback(
+    () => {
+      let chosenWord;
+      if (level < words.length) {
+        chosenWord = choice(words[level])
+      } else {
+        chosenWord = ""
       }
+      return chosenWord
+    },
+    [level]
+  )
+
+  const [word, setWord] = useState(getWord())
+
+  useEffect(() => {
+    const interval = setInterval(() => {setTimer(prev => {
+      if (prev > 0) { return prev - 1 } else {return 0}
+    })}, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    if (timer === 0) {
+      setState("lost")
     }
+  }, [timer])
+
+  useEffect(() => {
+    if (score === 5) {
+      setScore(0)
+      setLevel(prev => prev + 1)
+    }
+  }, [score])
+
+  useEffect(
+    () => {
+      if (level === words.length + 1) {
+        setState("won")
+      }
+    },
+    [level]
+  )
+
+  useEffect(
+    () => {
+      if (typedWord !== word.slice(0, typedWord.length)) {
+        setTypedWord(prev => prev.slice(0, -1))
+      } else if (typedWord === word) {
+        setTypedWord('')
+        setWord(getWord())
+        setTimer(5)
+        setScore(prev => prev + 1)
+      }
+    },
+    [typedWord, word, getWord]
+  )
+
+  function renderRunningGame() {
+    return <div>
+      <p>{word}</p>
+      <input value={typedWord} onChange={event => setTypedWord(event.target.value)}/> {timer}
+    </div>
   }
 
-  function loose() {
-    setEnded('lost')
-  }
-
-  function renderPlayingSession() {
-    return (
-      <div>
-        <h2>Level {level}</h2>
-        <p>{currentWord}</p>
-        <input value={currentTypedWord} onChange={onInput}/>
-      </div>
-    )
-  }
-
-  function renderEndScreen() {
-    return (
-      <div>
-        <h2>You have {ended}</h2>
-        <p>Your level is {level}</p>
-        <p>Your score is {score}</p>
-      </div>
-    )
-  }
-
-  let html;
-  if (ended) {
-    html = renderEndScreen()
-  } else {
-    html = renderPlayingSession()
-  }
-  return html
+  return <div>
+    {state === "running" ? renderRunningGame() : state}
+    <p>Score : {score} / 5</p>
+    <p>Level : {level}</p>
+  </div>
 }

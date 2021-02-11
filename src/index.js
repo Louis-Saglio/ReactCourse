@@ -5,7 +5,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 // import TicTacToe from "./TicTacToe";
 // import Sandbox from "./Sandbox";
-// import Keybr from "./Keybr"
+import Keybr from "./Keybr"
 import Users from "./Users"
 
 ReactDOM.render(
@@ -13,8 +13,8 @@ ReactDOM.render(
     {/*<Sandbox name={"Louis"} />*/}
     {/*<App/>*/}
     {/*<TicTacToe/>*/}
-    {/*<Keybr/>*/}
-    <Users/>
+    <Keybr/>
+    {/*<Users/>*/}
   </React.StrictMode>,
   document.getElementById('root')
 );
