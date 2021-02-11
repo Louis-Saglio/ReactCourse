@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 // import App from './App';
 import reportWebVitals from './reportWebVitals';
-import TicTacToe from "./TicTacToe";
-// import Sandbox from "./Sandbox";
+// import TicTacToe from "./TicTacToe";
+import Sandbox from "./Sandbox";
 
 ReactDOM.render(
   <React.StrictMode>
-    {/*<Sandbox name={"Louis"} />*/}
+    <Sandbox name={"Louis"} />
     {/*<App/>*/}
-    <TicTacToe/>
+    {/*<TicTacToe/>*/}
   </React.StrictMode>,
   document.getElementById('root')
 );
