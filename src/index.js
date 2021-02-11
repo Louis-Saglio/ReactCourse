@@ -4,13 +4,15 @@ import './index.css';
 // import App from './App';
 import reportWebVitals from './reportWebVitals';
 // import TicTacToe from "./TicTacToe";
-import Sandbox from "./Sandbox";
+// import Sandbox from "./Sandbox";
+import Keybr from "./Keybr"
 
 ReactDOM.render(
   <React.StrictMode>
-    <Sandbox name={"Louis"} />
+    {/*<Sandbox name={"Louis"} />*/}
     {/*<App/>*/}
     {/*<TicTacToe/>*/}
+    <Keybr/>
   </React.StrictMode>,
   document.getElementById('root')
 );
